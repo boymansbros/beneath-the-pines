@@ -22,10 +22,15 @@ namespace BeneathThePines
     }
 
     public enum NodeType
-    {
-        Start,
-        Trail,
-        Camp,
-        Destination
-    }
+{
+    Start,
+    Trail,
+    Junction,
+    Landmark,
+    Hazard,
+    Resource,
+    Camp,
+    Outpost,
+    Destination
+}
 }
