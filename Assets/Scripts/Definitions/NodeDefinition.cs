@@ -9,11 +9,7 @@ namespace BeneathThePines
         public NodeType NodeType;
 
         public List<string> NextNodeIds = new();
-
         public UnityEngine.Vector2 MapPosition;
-
-        public List<TrailCardDefinition> PossibleCards = new();
-
         public List<TrailCardDefinition> PossibleCards = new();
     }
 }
