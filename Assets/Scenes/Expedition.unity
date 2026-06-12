@@ -284,6 +284,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd3fe2e4be8fe174595b49469271f164, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BeneathThePines.PrototypeLoopTester
+  testNodes:
+  - {fileID: 11400000, guid: ba1ab88b3a4f839488ac32a858299077, type: 2}
+  - {fileID: 11400000, guid: 5600ec032268b444e86171adb3f2aaf9, type: 2}
+  - {fileID: 11400000, guid: 1d90033a2f5ac4f498eadcc7ee67a444, type: 2}
+  - {fileID: 11400000, guid: e1e721912f560d64a883837000093b75, type: 2}
 --- !u!4 &1814338542
 Transform:
   m_ObjectHideFlags: 0

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b39bba83cca685c4b87d90bca30fb6c5, type: 3}
   m_Name: Node_Destination
   m_EditorClassIdentifier: Assembly-CSharp::BeneathThePines.NodeDefinition
-  NodeId: 
-  DisplayName: 
-  NodeType: 0
+  NodeId: destination
+  DisplayName: Fire Tower Lookout
+  NodeType: 8
   Connections: []
-  MapPosition: {x: 0, y: 0}
+  MapPosition: {x: 3, y: 0}
