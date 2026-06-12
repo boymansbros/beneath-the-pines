@@ -5,6 +5,8 @@ namespace BeneathThePines
 {
     public class PrototypeLoopTester : MonoBehaviour
     {
+        [SerializeField] private List<NodeDefinition> testNodes = new();
+
         private RunState _run;
 
         private PlayerStatSystem _playerStats;
@@ -22,10 +24,9 @@ namespace BeneathThePines
 
             _run = RunFactory.CreateNewRun();
 
-            List<NodeDefinition> nodes = CreateTestNodes();
-            _mapSystem = new MapSystem(nodes);
+            _mapSystem = new MapSystem(testNodes);
 
-            Debug.Log("=== Beneath the Pines Prototype Test ===");
+            Debug.Log("=== Beneath the Pines Scriptable Node Route Test ===");
 
             RunTestLoop();
 
@@ -35,8 +36,26 @@ namespace BeneathThePines
 
         private void RunTestLoop()
         {
-            _mapSystem.MoveToNode("trail_01", _run);
+            _mapSystem.MoveToNode("start", _run);
 
+            PrintAvailableRoutes();
+            TravelFirstAvailableRoute();
+
+            ResolveMuddyTrailCard();
+
+            PrintAvailableRoutes();
+            TravelFirstAvailableRoute();
+
+            PerformBasicCampActions();
+
+            _nightSystem.ResolveNight(_run);
+
+            PrintAvailableRoutes();
+            TravelFirstAvailableRoute();
+        }
+
+        private void ResolveMuddyTrailCard()
+        {
             TrailCardDefinition muddyTrail = new TrailCardDefinition
             {
                 CardId = "card_muddy_trail",
@@ -51,9 +70,10 @@ namespace BeneathThePines
             };
 
             _cardResolver.Resolve(muddyTrail, _run);
+        }
 
-            _mapSystem.MoveToNode("camp_01", _run);
-
+        private void PerformBasicCampActions()
+        {
             CampActionDefinition shelter = new CampActionDefinition
             {
                 ActionId = "set_shelter",
@@ -82,45 +102,54 @@ namespace BeneathThePines
             _campSystem.PerformAction(shelter, _run);
             _campSystem.PerformAction(water, _run);
             _campSystem.PerformAction(meal, _run);
-
-            _nightSystem.ResolveNight(_run);
-
-            _mapSystem.MoveToNode("destination", _run);
         }
 
-        private List<NodeDefinition> CreateTestNodes()
+        private void TravelFirstAvailableRoute()
         {
-            return new List<NodeDefinition>
+            List<NodeConnectionDefinition> availableRoutes = _mapSystem.GetAvailableConnections(_run);
+
+            if (availableRoutes.Count == 0)
             {
-                new NodeDefinition
-                {
-                    NodeId = "start",
-                    DisplayName = "Trailhead",
-                    NodeType = NodeType.Start,
-                    NextNodeIds = new List<string> { "trail_01" }
-                },
-                new NodeDefinition
-                {
-                    NodeId = "trail_01",
-                    DisplayName = "Muddy Forest Path",
-                    NodeType = NodeType.Trail,
-                    NextNodeIds = new List<string> { "camp_01" }
-                },
-                new NodeDefinition
-                {
-                    NodeId = "camp_01",
-                    DisplayName = "Pine Hollow Camp",
-                    NodeType = NodeType.Camp,
-                    NextNodeIds = new List<string> { "destination" }
-                },
-                new NodeDefinition
-                {
-                    NodeId = "destination",
-                    DisplayName = "Fire Tower Lookout",
-                    NodeType = NodeType.Destination,
-                    NextNodeIds = new List<string>()
-                }
-            };
+                _run.LogEntries.Add("No available routes from current node.");
+                return;
+            }
+
+            NodeConnectionDefinition selectedRoute = availableRoutes[0];
+
+            _run.LogEntries.Add($"Selected route: {selectedRoute.DisplayName}");
+
+            _mapSystem.TravelConnection(selectedRoute, _run);
+        }
+
+        private void PrintAvailableRoutes()
+        {
+            NodeDefinition currentNode = _mapSystem.GetCurrentNode(_run);
+
+            if (currentNode == null)
+            {
+                _run.LogEntries.Add("Current node not found.");
+                return;
+            }
+
+            _run.LogEntries.Add($"Current node: {currentNode.DisplayName}");
+
+            List<NodeConnectionDefinition> availableRoutes = _mapSystem.GetAvailableConnections(_run);
+
+            if (availableRoutes.Count == 0)
+            {
+                _run.LogEntries.Add("Available routes: none");
+                return;
+            }
+
+            _run.LogEntries.Add("Available routes:");
+
+            foreach (NodeConnectionDefinition route in availableRoutes)
+            {
+                _run.LogEntries.Add(
+                    $"- {route.DisplayName}: {route.Description} " +
+                    $"({route.DaylightCost} daylight, {route.StaminaCost} stamina)"
+                );
+            }
         }
 
         private void PrintLog()
